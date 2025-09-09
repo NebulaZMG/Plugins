@@ -6,5 +6,9 @@
   "main": "main.js",
   "rendererPreload": "renderer-preload.js",
   "categories": ["AI", "Chat", "Utilities"],
+  "authors": [
+    { "name": "Nebula Team", "email": "andrewzambazos@gmail.com" },
+    "Bobbybear007"
+  ],
   "enabled": true
 }
