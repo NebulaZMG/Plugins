@@ -23,6 +23,7 @@ function writeJSONSafe(p, data) {
 }
 
 module.exports.activate = function(ctx) {
+  console.log('[Nebot] Plugin activate called with ctx:', ctx);
   const pluginId = 'ollama-chat';
   const pluginDir = ctx.paths?.pluginDir || ctx.paths?.appPath || process.cwd();
   const userPlugins = path.join(ctx.paths?.userData || pluginDir, 'plugins');
@@ -288,4 +289,10 @@ module.exports.activate = function(ctx) {
       });
     });
   } catch (e) { ctx.warn('context menu contrib failed', e); }
+
+  // Register dedicated internal page (browser://nebot) served from plugin directory
+  try {
+    console.log('[Nebot] Registering page with path:', path.join(ctx.paths.pluginDir, 'page.html'));
+    ctx.registerRendererPage?.({ id: 'nebot', html: path.join(ctx.paths.pluginDir, 'page.html') });
+  } catch (e) { ctx.warn('page registration failed', e); }
 };

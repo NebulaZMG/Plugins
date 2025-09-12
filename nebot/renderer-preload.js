@@ -21,6 +21,14 @@ try {
       } catch { return code; }
     }
   });
+  // Expose to page context so page.html no longer needs CDN scripts
+  try {
+    if (typeof window !== 'undefined') {
+      window.marked = marked;
+      window.DOMPurify = DOMPurify;
+      window.hljs = hljs;
+    }
+  } catch {}
 } catch (e) {
   // If libs aren't available yet, we'll gracefully render as plain text.
 }
@@ -83,19 +91,35 @@ function ensureStyles() {
   .${pluginId}-msg.assistant { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); align-self: flex-start; }
   /* Rich content styles */
   .${pluginId}-msg * { color: inherit; }
-  .${pluginId}-msg p { margin: 0.4em 0; }
-  .${pluginId}-msg h1, .${pluginId}-msg h2, .${pluginId}-msg h3 { margin: 0.6em 0 0.3em; font-weight: 700; }
-  .${pluginId}-msg ul, .${pluginId}-msg ol { padding-left: 1.2em; margin: 0.4em 0; }
-  .${pluginId}-msg blockquote { margin: 0.6em 0; padding: 0.4em 0.8em; border-left: 3px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.05); border-radius: 8px; }
-  .${pluginId}-msg code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; background: rgba(0,0,0,0.35); padding: 0.15em 0.35em; border-radius: 6px; }
-  .${pluginId}-msg pre { background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px; overflow: auto; border: 1px solid rgba(255,255,255,0.08); }
-  .${pluginId}-msg pre code { background: transparent; padding: 0; }
-  /* Minimal highlight colors aligned to theme */
-  .${pluginId}-msg .hljs { color: var(--text, #e8e8f0); }
+  .${pluginId}-msg p { margin: 0.6em 0; line-height: 1.6; }
+  .${pluginId}-msg h1, .${pluginId}-msg h2, .${pluginId}-msg h3, .${pluginId}-msg h4, .${pluginId}-msg h5, .${pluginId}-msg h6 { margin: 0.8em 0 0.4em; font-weight: 600; line-height: 1.25; }
+  .${pluginId}-msg h1 { font-size: 1.4em; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 0.3em; }
+  .${pluginId}-msg h2 { font-size: 1.2em; }
+  .${pluginId}-msg h3 { font-size: 1.1em; }
+  .${pluginId}-msg ul, .${pluginId}-msg ol { padding-left: 1.2em; margin: 0.6em 0; }
+  .${pluginId}-msg li { margin: 0.25em 0; line-height: 1.5; }
+  .${pluginId}-msg blockquote { margin: 0.8em 0; padding: 0.6em 1em; border-left: 4px solid rgba(123,97,255,0.6); background: rgba(123,97,255,0.08); border-radius: 0 8px 8px 0; font-style: italic; }
+  .${pluginId}-msg code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; background: rgba(0,0,0,0.4); padding: 0.15em 0.35em; border-radius: 6px; font-size: 0.9em; border: 1px solid rgba(255,255,255,0.1); }
+  .${pluginId}-msg pre { background: rgba(0,0,0,0.5); padding: 12px 14px; border-radius: 10px; overflow: auto; border: 1px solid rgba(255,255,255,0.12); margin: 0.8em 0; line-height: 1.45; }
+  .${pluginId}-msg pre code { background: transparent; padding: 0; border: none; font-size: 0.85em; }
+  .${pluginId}-msg a { color: #6cb6ff; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s; }
+  .${pluginId}-msg a:hover { border-bottom-color: #6cb6ff; }
+  .${pluginId}-msg table { border-collapse: collapse; margin: 0.8em 0; width: 100%; font-size: 0.9em; }
+  .${pluginId}-msg th, .${pluginId}-msg td { border: 1px solid rgba(255,255,255,0.15); padding: 0.5em 0.7em; text-align: left; }
+  .${pluginId}-msg th { background: rgba(255,255,255,0.05); font-weight: 600; }
+  .${pluginId}-msg hr { border: none; height: 1px; background: rgba(255,255,255,0.15); margin: 1.5em 0; }
+  .${pluginId}-msg strong { font-weight: 600; }
+  .${pluginId}-msg em { font-style: italic; }
+  /* Enhanced highlight colors aligned to theme */
+  .${pluginId}-msg .hljs { color: var(--text, #e8e8f0); background: transparent !important; }
   .${pluginId}-msg .hljs-keyword, .${pluginId}-msg .hljs-selector-tag { color: #c792ea; }
   .${pluginId}-msg .hljs-string, .${pluginId}-msg .hljs-attr { color: #ecc48d; }
   .${pluginId}-msg .hljs-number, .${pluginId}-msg .hljs-literal { color: #f78c6c; }
   .${pluginId}-msg .hljs-comment { color: #7f848e; }
+  .${pluginId}-msg .hljs-function { color: #82aaff; }
+  .${pluginId}-msg .hljs-variable { color: #ffcb6b; }
+  .${pluginId}-msg .hljs-type { color: #c3e88d; }
+  .${pluginId}-msg .hljs-built_in { color: #ff5370; }
   .${pluginId}-composer { display: flex; gap: 8px; padding: 10px; border-top: 1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.06); }
   .${pluginId}-composer textarea { flex: 1; resize: vertical; min-height: 44px; max-height: 140px; background: rgba(0,0,0,0.28); color: var(--text, #e8e8f0); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 12px; outline: none; }
   .${pluginId}-composer textarea:focus { border-color: rgba(123,97,255,0.45); box-shadow: 0 0 0 3px rgba(123,97,255,0.18); }
@@ -354,10 +378,49 @@ function panelEl() {
   let root = document.getElementById(`${pluginId}-panel`);
   if (root) return root;
   state.width = getSavedWidth();
+  function openFullPage() {
+    console.log('[Nebot] Open Page button clicked');
+    try {
+      const target = 'browser://nebot';
+      let opened = false;
+      // 0) Try window.postMessage bridge (works across contextIsolation)
+      try {
+        window.postMessage({ type: 'open-internal-page', url: target }, '*');
+        opened = true;
+        console.log('[Nebot] Posted message to open internal page', target);
+      } catch {}
+      // 1) Preferred path: ask host (tab manager) via sendToHost so this works inside any webview
+      try {
+        if (!opened && ipcRenderer && typeof ipcRenderer.sendToHost === 'function') {
+          ipcRenderer.sendToHost('navigate', target, { newTab: true });
+          opened = true;
+          console.log('[Nebot] Requested host to open new tab for', target);
+        }
+      } catch {}
+      // 2) If we're actually in the top-level renderer (not a webview) window.createTab will exist
+      if (!opened && typeof window.createTab === 'function') {
+        window.createTab(target);
+        opened = true;
+        console.log('[Nebot] Used window.createTab fallback for', target);
+      }
+      // 3) Last resort: manipulate URL bar + navigate (top-level renderer only)
+      if (!opened && typeof window.navigate === 'function') {
+        const urlBox = document.getElementById('url');
+        if (urlBox) { urlBox.value = target; window.navigate(); opened = true; }
+        console.log('[Nebot] Used window.navigate fallback for', target);
+      }
+      if (!opened) console.warn('[Nebot] Failed to find a method to open full page Nebot');
+    } catch (e) {
+      console.warn('Failed to open full Nebot page', e);
+    } finally {
+      closePanel(document.getElementById(`${pluginId}-panel`));
+    }
+  }
   root = h('div', { id: `${pluginId}-panel`, class: `${pluginId}-panel ${state.docked ? 'docked' : 'floating'}` },
     h('div', { class: `${pluginId}-header` },
   h('span', {}, 'Nebot'),
       h('div', {},
+        h('button', { class: `${pluginId}-btn secondary`, title: 'Open full-page Nebot (browser://nebot)', onclick: openFullPage }, 'Open Page'),
         h('button', { class: `${pluginId}-btn secondary`, onclick: () => closePanel(root) }, 'Close')
       )
     ),
@@ -433,7 +496,7 @@ async function openSettings() {
   const base = prompt('Ollama base URL', settings.ollamaBaseUrl || 'http://homelab.andrewzambazos.com:11434');
   if (base == null) return;
   // Model is fixed; show message for clarity
-  alert('Model is fixed to gpt-oss:20b');
+  alert('Model is fixed to deepseek-r1:8b');
   const systemPrompt = prompt('System prompt', settings.systemPrompt || 'You are a helpful assistant inside the Nebula browser.');
   await ipcRenderer.invoke(`${pluginId}:set-settings`, { ollamaBaseUrl: base, systemPrompt });
 }
